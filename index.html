@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoSeMeOlvida</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔔 NoSeMeOlvida</h1>
+      <p class="subtitle">Nunca más te multen por olvidar una fecha</p>
+    </header>
+
+    <section class="form-section">
+      <h2>Agregar vencimiento</h2>
+      <form id="form-vencimiento">
+        <input 
+          type="text" 
+          id="nombre" 
+          placeholder="Ej: Declaración SAT" 
+          required
+        >
+        <input 
+          type="date" 
+          id="fecha" 
+          required
+        >
+        <button type="submit">+ Agregar</button>
+      </form>
+    </section>
+
+    <section class="lista-section">
+      <h2>Mis vencimientos</h2>
+      <div id="lista"></div>
+      <p id="vacio" class="vacio">Aún no tienes vencimientos. Agrega el primero arriba 👆</p>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
