@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,39 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NoSeMeOlvida</title>
   <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔔</text></svg>">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🔔 NoSeMeOlvida</h1>
-      <p class="subtitle">Nunca más te multen por olvidar una fecha</p>
-    </header>
 
-    <section class="form-section">
-      <h2>Agregar vencimiento</h2>
-      <form id="form-vencimiento">
-        <input 
-          type="text" 
-          id="nombre" 
-          placeholder="Ej: Declaración SAT" 
-          required
-        >
-        <input 
-          type="date" 
-          id="fecha" 
-          required
-        >
-        <button type="submit">+ Agregar</button>
-      </form>
-    </section>
+  <!-- ============================================
+       SECCIÓN DE LOGIN / REGISTRO
+       ============================================ -->
+  <div id="seccion-login">
+    <div class="container-login">
+      
+      <header class="header-login">
+        <h1>🔔 NoSeMeOlvida</h1>
+        <p class="subtitle">Nunca más te multen por olvidar una fecha</p>
+      </header>
 
-    <section class="lista-section">
-      <h2>Mis vencimientos</h2>
-      <div id="lista"></div>
-      <p id="vacio" class="vacio">Aún no tienes vencimientos. Agrega el primero arriba 👆</p>
-    </section>
+      <div class="card-login">
+        
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab activo" data-tab="login">Iniciar sesión</button>
+          <button class="tab" data-tab="registro">Crear cuenta</button>
+        </div>
+
+        <!-- Formulario de Login -->
+        <form id="form-login">
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="tu@email.com" 
+            required
+            autocomplete="email"
+          >
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Contraseña" 
+            required
+            autocomplete="current-password"
+            minlength="6"
+          >
+          <button type="submit">Entrar</button>
+        </form>
+
+        <!-- Formulario de Registro -->
+        <form id="form-registro" style="display: none;">
+          <input 
+            type="email" 
+            id="email-reg" 
+            placeholder="tu@email.com" 
+            required
+            autocomplete="email"
+          >
+          <input 
+            type="password" 
+            id="password-reg" 
+            placeholder="Contraseña (mínimo 6 caracteres)" 
+            required
+            autocomplete="new-password"
+            minlength="6"
+          >
+          <button type="submit">Crear cuenta</button>
+        </form>
+
+        <!-- Mensaje de estado -->
+        <p id="mensaje-login" class="mensaje"></p>
+
+      </div>
+
+    </div>
   </div>
 
-  <script src="app.js"></script>
+  <!-- ============================================
+       SECCIÓN DE LA APP (después de login)
+       ============================================ -->
+  <div id="seccion-app" style="display: none;">
+    <div class="container">
+      
+      <header>
+        <h1>🔔 NoSeMeOlvida</h1>
+        <p class="subtitle">Nunca más te multen por olvidar una fecha</p>
+        <div class="user-bar">
+          <span id="user-email"></span>
+          <button id="btn-cerrar-sesion" title="Cerrar sesión">Salir</button>
+        </div>
+      </header>
+
+      <section class="form-section">
+        <h2>Agregar vencimiento</h2>
+        <form id="form-vencimiento">
+          <input 
+            type="text" 
+            id="nombre" 
+            placeholder="Ej: Declaración SAT" 
+            required
+          >
+          <input 
+            type="date" 
+            id="fecha" 
+            required
+          >
+          <button type="submit">+ Agregar</button>
+        </form>
+      </section>
+
+      <section class="lista-section">
+        <h2>Mis vencimientos</h2>
+        <div id="lista"></div>
+        <p id="vacio" class="vacio">Aún no tienes vencimientos. Agrega el primero arriba 👆</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+
 </body>
 </html>
