@@ -96,7 +96,9 @@ async function agregarVencimiento(nombre, fecha) {
     .insert([{
       nombre: nombre,
       fecha: fecha,
-      user_id: usuarioActual.id
+        user_id: usuarioActual.id,
+         email_aviso: usuarioActual.email,
+         dias_aviso: 3
     }])
     .select()
   
