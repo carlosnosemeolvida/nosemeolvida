@@ -1,3 +1,11 @@
+// Redirigir recuperación de contraseña
+if (window.location.hash.includes('access_token=') && window.location.hash.includes('type=recovery')) {
+  window.location.href = '/reset-password.html' + window.location.hash
+}
+
+
+
+
 // ============================================
 // NoSeMeOlvida - App con Supabase
 // ============================================
