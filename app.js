@@ -130,40 +130,18 @@ async function eliminarVencimiento(id) {
   }
   return true
 }
-
-async function editarVencimiento(id) {
+function editarVencimiento(id) {
   const vencimiento = vencimientos.find(v => v.id == id)
   if (!vencimiento) return
 
-  const nuevoNombre = prompt('Nombre:', vencimiento.nombre)
-  if (nuevoNombre === null) return
+  document.getElementById('editar-nombre').value = vencimiento.nombre
+  document.getElementById('editar-fecha').value = vencimiento.fecha
+  document.getElementById('modal-editar').dataset.id = id
 
-  const nuevaFecha = prompt('Fecha (YYYY-MM-DD):', vencimiento.fecha)
-  if (nuevaFecha === null) return
-
-  if (!nuevoNombre.trim() || !nuevaFecha.trim()) return
-
-  const { error } = await supabase
-    .from('vencimientos')
-    .update({
-      nombre: nuevoNombre.trim(),
-      fecha: nuevaFecha.trim(),
-      aviso_enviado: false
-    })
-    .eq('id', id)
-
-  if (error) {
-    alert('Error al editar: ' + error.message)
-    return
-  }
-
-  vencimiento.nombre = nuevoNombre.trim()
-  vencimiento.fecha = nuevaFecha.trim()
-  vencimiento.aviso_enviado = false
-
-  vencimientos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
-  render()
+  document.getElementById('modal-editar').style.display = 'flex'
 }
+
+
 
 // ============================================
 // Utilidades
@@ -342,4 +320,58 @@ async function init() {
   }
 }
 
+
+// ============================================
+// MODAL EDITAR — Event listeners
+// ============================================
+
+// Submit del form de edición
+document.getElementById('form-editar').addEventListener('submit', async (e) => {
+  e.preventDefault()
+
+  const id = document.getElementById('modal-editar').dataset.id
+  const nuevoNombre = document.getElementById('editar-nombre').value.trim()
+  const nuevaFecha = document.getElementById('editar-fecha').value
+
+  if (!nuevoNombre || !nuevaFecha) return
+
+  const { error } = await supabase
+    .from('vencimientos')
+    .update({
+      nombre: nuevoNombre,
+      fecha: nuevaFecha,
+      aviso_enviado: false
+    })
+    .eq('id', id)
+
+  if (error) {
+    alert('Error al editar: ' + error.message)
+    return
+  }
+
+  const vencimiento = vencimientos.find(v => v.id == id)
+  if (vencimiento) {
+    vencimiento.nombre = nuevoNombre
+    vencimiento.fecha = nuevaFecha
+    vencimiento.aviso_enviado = false
+  }
+
+  vencimientos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+  cerrarModal()
+  render()
+})
+
+// Función para cerrar el modal
+function cerrarModal() {
+  document.getElementById('modal-editar').style.display = 'none'
+  document.getElementById('form-editar').reset()
+}
+
+// Botón cancelar
+document.getElementById('btn-cancelar-edicion').addEventListener('click', cerrarModal)
+
+// Cerrar al hacer clic fuera del modal
+document.getElementById('modal-editar').addEventListener('click', (e) => {
+  if (e.target.id === 'modal-editar') cerrarModal()
+})
 init()
