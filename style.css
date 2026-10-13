@@ -294,3 +294,21 @@ h2 {
     font-size: 24px;
   }
 }
+
+/* Botón editar */
+.btn-editar {
+  background: transparent;
+  color: #999;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: 4px;
+}
+
+.btn-editar:hover {
+  background: #e0e7ff;
+  color: #4f46e5;
+}
