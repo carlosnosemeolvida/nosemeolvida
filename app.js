@@ -131,6 +131,40 @@ async function eliminarVencimiento(id) {
   return true
 }
 
+async function editarVencimiento(id) {
+  const vencimiento = vencimientos.find(v => v.id == id)
+  if (!vencimiento) return
+
+  const nuevoNombre = prompt('Nombre:', vencimiento.nombre)
+  if (nuevoNombre === null) return
+
+  const nuevaFecha = prompt('Fecha (YYYY-MM-DD):', vencimiento.fecha)
+  if (nuevaFecha === null) return
+
+  if (!nuevoNombre.trim() || !nuevaFecha.trim()) return
+
+  const { error } = await supabase
+    .from('vencimientos')
+    .update({
+      nombre: nuevoNombre.trim(),
+      fecha: nuevaFecha.trim(),
+      aviso_enviado: false
+    })
+    .eq('id', id)
+
+  if (error) {
+    alert('Error al editar: ' + error.message)
+    return
+  }
+
+  vencimiento.nombre = nuevoNombre.trim()
+  vencimiento.fecha = nuevaFecha.trim()
+  vencimiento.aviso_enviado = false
+
+  vencimientos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+  render()
+}
+
 // ============================================
 // Utilidades
 // ============================================
@@ -181,7 +215,9 @@ function render() {
         <div class="nombre">${v.nombre}</div>
         <div class="dias">${texto}</div>
       </div>
-      <button class="btn-eliminar" data-id="${v.id}" title="Eliminar">✕</button>
+      <button class="btn-editar" data-id="${v.id}" title="Editar">✏️</button>
+<button class="btn-eliminar" data-id="${v.id}" title="Eliminar">✕</button>
+
     `
     lista.appendChild(div)
   })
@@ -197,6 +233,14 @@ function render() {
       }
     })
   })
+
+// Botones editar
+document.querySelectorAll('.btn-editar').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.id
+    editarVencimiento(id)
+  })
+})
 }
 
 // ============================================
