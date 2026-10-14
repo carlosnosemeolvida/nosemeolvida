@@ -98,7 +98,7 @@ async function cargarVencimientos() {
   return data || []
 }
 
-async function agregarVencimiento(nombre, fecha) {
+async function agregarVencimiento(nombre, fecha, diasAviso) {
   const { data, error } = await supabase
     .from('vencimientos')
     .insert([{
@@ -106,7 +106,7 @@ async function agregarVencimiento(nombre, fecha) {
       fecha: fecha,
         user_id: usuarioActual.id,
          email_aviso: usuarioActual.email,
-         dias_aviso: 3
+         dias_aviso: diasAviso
     }])
     .select()
   
@@ -136,6 +136,7 @@ function editarVencimiento(id) {
 
   document.getElementById('editar-nombre').value = vencimiento.nombre
   document.getElementById('editar-fecha').value = vencimiento.fecha
+  document.getElementById('editar-dias-aviso').value = vencimiento.dias_aviso || 3
   document.getElementById('modal-editar').dataset.id = id
 
   document.getElementById('modal-editar').style.display = 'flex'
@@ -294,9 +295,11 @@ formVencimiento.addEventListener('submit', async (e) => {
   e.preventDefault()
   const nombre = inputNombre.value.trim()
   const fecha = inputFecha.value
+    const diasAviso = parseInt(document.getElementById('dias-aviso').value, 10)  
   if (!nombre || !fecha) return
 
-  const nuevo = await agregarVencimiento(nombre, fecha)
+  
+  const nuevo = await agregarVencimiento(nombre, fecha, diasAviso)
   if (nuevo) {
     vencimientos.push(nuevo)
     vencimientos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
@@ -332,6 +335,7 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
   const id = document.getElementById('modal-editar').dataset.id
   const nuevoNombre = document.getElementById('editar-nombre').value.trim()
   const nuevaFecha = document.getElementById('editar-fecha').value
+  const nuevosDias = parseInt(document.getElementById('editar-dias-aviso').value, 10)
 
   if (!nuevoNombre || !nuevaFecha) return
 
@@ -340,6 +344,7 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
     .update({
       nombre: nuevoNombre,
       fecha: nuevaFecha,
+      dias_aviso: nuevosDias,  
       aviso_enviado: false
     })
     .eq('id', id)
@@ -353,6 +358,7 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
   if (vencimiento) {
     vencimiento.nombre = nuevoNombre
     vencimiento.fecha = nuevaFecha
+    vencimiento.dias_aviso = nuevosDias
     vencimiento.aviso_enviado = false
   }
 
