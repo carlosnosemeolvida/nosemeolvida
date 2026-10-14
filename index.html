@@ -106,6 +106,15 @@
             id="fecha" 
             required
           >
+              <label class="modal-label" style="margin-top: 4px;">Avisarme antes</label>
+    <select id="dias-aviso" required>
+      <option value="1">1 día antes</option>
+      <option value="3" selected>3 días antes</option>
+      <option value="5">5 días antes</option>
+      <option value="7">7 días antes</option>
+      <option value="15">15 días antes</option>
+      <option value="30">30 días antes</option>
+    </select>
           <button type="submit">+ Agregar</button>
         </form>
       </section>
@@ -141,6 +150,16 @@
           id="editar-fecha" 
           required
         >
+
+        <label class="modal-label">Avisarme antes</label>
+        <select id="editar-dias-aviso" required>
+          <option value="1">1 día antes</option>
+          <option value="3">3 días antes</option>
+          <option value="5">5 días antes</option>
+          <option value="7">7 días antes</option>
+          <option value="15">15 días antes</option>
+          <option value="30">30 días antes</option>
+        </select>
         
         <div class="modal-botones">
           <button type="button" id="btn-cancelar-edicion" class="btn-cancelar">
