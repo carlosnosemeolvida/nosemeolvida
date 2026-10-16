@@ -182,7 +182,12 @@ function render() {
   }
   vacio.style.display = 'none'
 
-  vencimientos.forEach(v => {
+    const filtro = document.getElementById('buscador').value.toLowerCase().trim()
+  const listaFiltrada = vencimientos.filter(v => 
+    v.nombre.toLowerCase().includes(filtro)
+  )
+
+  listaFiltrada.forEach(v => {
     const dias = diasRestantes(v.fecha)
     const color = colorSemaforo(dias)
     const texto = textoDias(dias)
@@ -290,6 +295,11 @@ formRegistro.addEventListener('submit', async (e) => {
 })
 
 btnCerrarSesion.addEventListener('click', cerrarSesion)
+
+// Buscador en tiempo real
+document.getElementById('buscador').addEventListener('input', () => {
+  render()
+})
 
 formVencimiento.addEventListener('submit', async (e) => {
   e.preventDefault()
