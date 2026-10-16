@@ -411,3 +411,29 @@ h2 {
 .btn-guardar:hover {
   background: #4338ca;
 }
+
+/* ============================================
+   BUSCADOR DE VENCIMIENTOS
+   ============================================ */
+
+.buscador {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 15px;
+  background: #fafafa;
+  transition: all 0.2s;
+}
+
+.buscador:focus {
+  outline: none;
+  border-color: #4f46e5;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.buscador::placeholder {
+  color: #999;
+}
