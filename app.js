@@ -98,7 +98,7 @@ async function cargarVencimientos() {
   return data || []
 }
 
-async function agregarVencimiento(nombre, fecha, diasAviso) {
+async function agregarVencimiento(nombre, fecha, diasAviso, categoria) {
   const { data, error } = await supabase
     .from('vencimientos')
     .insert([{
@@ -106,7 +106,8 @@ async function agregarVencimiento(nombre, fecha, diasAviso) {
       fecha: fecha,
         user_id: usuarioActual.id,
          email_aviso: usuarioActual.email,
-         dias_aviso: diasAviso
+         dias_aviso: diasAviso,
+               categoria: categoria
     }])
     .select()
   
@@ -137,6 +138,7 @@ function editarVencimiento(id) {
   document.getElementById('editar-nombre').value = vencimiento.nombre
   document.getElementById('editar-fecha').value = vencimiento.fecha
   document.getElementById('editar-dias-aviso').value = vencimiento.dias_aviso || 3
+    document.getElementById('editar-categoria').value = vencimiento.categoria || 'otro'
   document.getElementById('modal-editar').dataset.id = id
 
   document.getElementById('modal-editar').style.display = 'flex'
@@ -191,13 +193,21 @@ function render() {
     const dias = diasRestantes(v.fecha)
     const color = colorSemaforo(dias)
     const texto = textoDias(dias)
+      const catInfo = {
+    fiscal: { emoji: '📋', nombre: 'Fiscal' },
+    escuela: { emoji: '🎓', nombre: 'Escuela' },
+    hogar: { emoji: '🏠', nombre: 'Hogar' },
+    negocio: { emoji: '💼', nombre: 'Negocio' },
+    financiero: { emoji: '💳', nombre: 'Financiero' },
+    otro: { emoji: '📌', nombre: 'Otro' }
+  }[v.categoria] || { emoji: '📌', nombre: 'Otro' }
 
     const div = document.createElement('div')
     div.className = `vencimiento ${color}`
     div.innerHTML = `
       <div class="info">
         <div class="nombre">${v.nombre}</div>
-        <div class="dias">${texto}</div>
+              <div class="dias">${catInfo.emoji} ${catInfo.nombre} · ${texto}</div>
       </div>
       <button class="btn-editar" data-id="${v.id}" title="Editar">✏️</button>
 <button class="btn-eliminar" data-id="${v.id}" title="Eliminar">✕</button>
@@ -305,11 +315,12 @@ formVencimiento.addEventListener('submit', async (e) => {
   e.preventDefault()
   const nombre = inputNombre.value.trim()
   const fecha = inputFecha.value
-    const diasAviso = parseInt(document.getElementById('dias-aviso').value, 10)  
+    const diasAviso = parseInt(document.getElementById('dias-aviso').value, 10)
+      const categoria = document.getElementById('categoria').value 
   if (!nombre || !fecha) return
 
   
-  const nuevo = await agregarVencimiento(nombre, fecha, diasAviso)
+  const nuevo = await agregarVencimiento(nombre, fecha, diasAviso, categoria)
   if (nuevo) {
     vencimientos.push(nuevo)
     vencimientos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
@@ -346,6 +357,7 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
   const nuevoNombre = document.getElementById('editar-nombre').value.trim()
   const nuevaFecha = document.getElementById('editar-fecha').value
   const nuevosDias = parseInt(document.getElementById('editar-dias-aviso').value, 10)
+    const nuevaCategoria = document.getElementById('editar-categoria').value
 
   if (!nuevoNombre || !nuevaFecha) return
 
@@ -354,7 +366,8 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
     .update({
       nombre: nuevoNombre,
       fecha: nuevaFecha,
-      dias_aviso: nuevosDias,  
+      dias_aviso: nuevosDias,
+            categoria: nuevaCategoria, 
       aviso_enviado: false
     })
     .eq('id', id)
@@ -369,6 +382,7 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
     vencimiento.nombre = nuevoNombre
     vencimiento.fecha = nuevaFecha
     vencimiento.dias_aviso = nuevosDias
+        vencimiento.categoria = nuevaCategoria
     vencimiento.aviso_enviado = false
   }
 
