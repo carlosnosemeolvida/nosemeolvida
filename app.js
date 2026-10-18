@@ -26,6 +26,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 // ============================================
 let usuarioActual = null
 let vencimientos = []
+let filtroCategoria = 'todas'
 
 // ============================================
 // Referencias del DOM
@@ -185,9 +186,13 @@ function render() {
   vacio.style.display = 'none'
 
     const filtro = document.getElementById('buscador').value.toLowerCase().trim()
-  const listaFiltrada = vencimientos.filter(v => 
-    v.nombre.toLowerCase().includes(filtro)
-  )
+    const listaFiltrada = vencimientos.filter(v => {
+    const coincideNombre = v.nombre.toLowerCase().includes(filtro)
+    const coincideCategoria = filtroCategoria === 'todas' || v.categoria === filtroCategoria
+    return coincideNombre && coincideCategoria
+  })
+    
+  
 
   listaFiltrada.forEach(v => {
     const dias = diasRestantes(v.fecha)
@@ -310,6 +315,21 @@ btnCerrarSesion.addEventListener('click', cerrarSesion)
 document.getElementById('buscador').addEventListener('input', () => {
   render()
 })
+
+// Filtros por categoría
+document.querySelectorAll('.filtro-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Quitar 'activo' de todos
+    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('activo'))
+    // Agregar 'activo' al botón clickeado
+    btn.classList.add('activo')
+    // Guardar el filtro seleccionado
+    filtroCategoria = btn.dataset.categoria
+    // Re-renderizar
+    render()
+  })
+})
+
 
 formVencimiento.addEventListener('submit', async (e) => {
   e.preventDefault()
