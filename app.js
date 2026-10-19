@@ -27,6 +27,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 let usuarioActual = null
 let vencimientos = []
 let filtroCategoria = 'todas'
+let vistaActual = 'proximos'
 
 // ============================================
 // Referencias del DOM
@@ -187,12 +188,23 @@ function render() {
   }
   vacio.style.display = 'none'
 
-    const filtro = document.getElementById('buscador').value.toLowerCase().trim()
-    const listaFiltrada = vencimientos.filter(v => {
+      const listaFiltrada = vencimientos.filter(v => {
     const coincideNombre = v.nombre.toLowerCase().includes(filtro)
     const coincideCategoria = filtroCategoria === 'todas' || v.categoria === filtroCategoria
-    return coincideNombre && coincideCategoria
+    
+    const dias = diasRestantes(v.fecha)
+    let coincideVista
+    if (vistaActual === 'proximos') {
+      // Próximos: no completados Y (fecha futura o hoy)
+      coincideVista = !v.completado && dias >= 0
+    } else {
+      // Historial: completados O fecha pasada
+      coincideVista = v.completado === true || dias < 0
+    }
+    
+    return coincideNombre && coincideCategoria && coincideVista
   })
+  
     
   
 
@@ -217,6 +229,7 @@ function render() {
         ${v.notas ? `<div class="notas">📝 ${v.notas}</div>` : ''}
               <div class="dias">${catInfo.emoji} ${catInfo.nombre} · ${texto}</div>
       </div>
+              ${vistaActual === 'proximos' ? `<button class="btn-completar" data-id="${v.id}" title="Marcar como pagado">✓</button>` : ''}
       <button class="btn-editar" data-id="${v.id}" title="Editar">✏️</button>
 <button class="btn-eliminar" data-id="${v.id}" title="Eliminar">✕</button>
 
@@ -243,6 +256,37 @@ document.querySelectorAll('.btn-editar').forEach(btn => {
     editarVencimiento(id)
   })
 })
+}
+
+// Botones completar (marcar como pagado)
+document.querySelectorAll('.btn-completar').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const id = btn.dataset.id
+    await marcarCompletado(id)
+  })
+})
+
+async function marcarCompletado(id) {
+  const { error } = await supabase
+    .from('vencimientos')
+    .update({
+      completado: true,
+      fecha_completado: new Date().toISOString()
+    })
+    .eq('id', id)
+
+  if (error) {
+    alert('Error al marcar: ' + error.message)
+    return
+  }
+
+  const vencimiento = vencimientos.find(v => v.id == id)
+  if (vencimiento) {
+    vencimiento.completado = true
+    vencimiento.fecha_completado = new Date().toISOString()
+  }
+
+  render()
 }
 
 // ============================================
@@ -329,6 +373,16 @@ document.querySelectorAll('.filtro-btn').forEach(btn => {
     // Guardar el filtro seleccionado
     filtroCategoria = btn.dataset.categoria
     // Re-renderizar
+    render()
+  })
+})
+
+// Toggle Próximos / Historial
+document.querySelectorAll('.vista-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.vista-btn').forEach(b => b.classList.remove('activo'))
+    btn.classList.add('activo')
+    vistaActual = btn.dataset.vista
     render()
   })
 })
