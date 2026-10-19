@@ -187,6 +187,7 @@ function render() {
     return
   }
   vacio.style.display = 'none'
+    const filtro = document.getElementById('buscador').value.toLowerCase().trim()
 
       const listaFiltrada = vencimientos.filter(v => {
     const coincideNombre = v.nombre.toLowerCase().includes(filtro)
