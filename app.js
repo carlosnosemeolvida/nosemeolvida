@@ -257,7 +257,7 @@ document.querySelectorAll('.btn-editar').forEach(btn => {
     editarVencimiento(id)
   })
 })
-}
+
 
 // Botones completar (marcar como pagado)
 document.querySelectorAll('.btn-completar').forEach(btn => {
@@ -266,7 +266,7 @@ document.querySelectorAll('.btn-completar').forEach(btn => {
     await marcarCompletado(id)
   })
 })
-
+}
 async function marcarCompletado(id) {
   const { error } = await supabase
     .from('vencimientos')
