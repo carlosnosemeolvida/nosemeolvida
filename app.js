@@ -116,7 +116,7 @@ async function agregarVencimiento(nombre, fecha, diasAviso, categoria, notas) {
   
   if (error) {
     console.error('Error agregando:', error)
-    alert('Error al guardar: ' + error.message)
+          mostrarToast('No se pudo guardar. Revisa tu conexión e intenta de nuevo.', 'error')
     return null
   }
   return data[0]
@@ -267,6 +267,28 @@ document.querySelectorAll('.btn-completar').forEach(btn => {
   })
 })
 }
+
+// ============================================
+// TOAST (MENSAJES EMERGENTES)
+// ============================================
+
+function mostrarToast(mensaje, tipo = 'info') {
+  const toast = document.getElementById('toast')
+  if (!toast) return
+  
+  toast.textContent = mensaje
+  toast.className = `toast ${tipo}`
+  toast.style.display = 'block'
+  
+  // Ocultar después de 3 segundos
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s ease-in'
+    setTimeout(() => {
+      toast.style.display = 'none'
+      toast.style.animation = ''
+    }, 300)
+  }, 3000)
+}
 async function marcarCompletado(id) {
   const { error } = await supabase
     .from('vencimientos')
@@ -277,7 +299,7 @@ async function marcarCompletado(id) {
     .eq('id', id)
 
   if (error) {
-    alert('Error al marcar: ' + error.message)
+        mostrarToast('No se pudo marcar. Intenta de nuevo.', 'error')
     return
   }
 
@@ -465,7 +487,7 @@ document.getElementById('form-editar').addEventListener('submit', async (e) => {
     .eq('id', id)
 
   if (error) {
-    alert('Error al editar: ' + error.message)
+        mostrarToast('No se pudo editar. Intenta de nuevo.', 'error')
     return
   }
 
