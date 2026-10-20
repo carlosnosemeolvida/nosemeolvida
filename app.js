@@ -306,8 +306,19 @@ function mostrarApp() {
 }
 
 async function cargarYRenderizar() {
+  const loader = document.getElementById('loader')
+  const lista = document.getElementById('lista')
+  
+  // Mostrar loader, ocultar lista
+  if (loader) loader.style.display = 'flex'
+  if (lista) lista.style.display = 'none'
+  
   vencimientos = await cargarVencimientos()
   render()
+  
+  // Ocultar loader, mostrar lista
+  if (loader) loader.style.display = 'none'
+  if (lista) lista.style.display = 'block'
 }
 
 // ============================================
