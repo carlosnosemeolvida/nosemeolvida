@@ -628,3 +628,21 @@ h2 {
     transform: translateX(-50%) translateY(20px);
   }
 }
+
+/* Botón Eliminar (rojo) */
+.btn-eliminar-confirmar {
+  flex: 1;
+  padding: 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-eliminar-confirmar:hover {
+  background: #dc2626;
+}
