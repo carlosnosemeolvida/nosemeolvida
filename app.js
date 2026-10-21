@@ -240,13 +240,8 @@ function render() {
 
   document.querySelectorAll('.btn-eliminar').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const id = btn.dataset.id
-      if (!confirm('¿Eliminar este vencimiento?')) return
-      const ok = await eliminarVencimiento(id)
-      if (ok) {
-        vencimientos = vencimientos.filter(v => v.id != id)
-        render()
-      }
+          const id = btn.dataset.id
+    confirmarEliminar(id)
     })
   })
 
@@ -289,6 +284,38 @@ function mostrarToast(mensaje, tipo = 'info') {
     }, 300)
   }, 3000)
 }
+
+// ============================================
+// CONFIRMAR ELIMINACIÓN
+// ============================================
+
+function confirmarEliminar(id) {
+  document.getElementById('modal-confirmar').dataset.id = id
+  document.getElementById('modal-confirmar').style.display = 'flex'
+}
+
+function cerrarConfirmar() {
+  document.getElementById('modal-confirmar').style.display = 'none'
+}
+
+// Listeners del modal de confirmación
+document.getElementById('btn-cancelar-eliminar').addEventListener('click', cerrarConfirmar)
+
+document.getElementById('btn-confirmar-eliminar').addEventListener('click', async () => {
+  const id = document.getElementById('modal-confirmar').dataset.id
+  cerrarConfirmar()
+  
+  const ok = await eliminarVencimiento(id)
+  if (ok) {
+    vencimientos = vencimientos.filter(v => v.id != id)
+    render()
+  }
+})
+
+// Cerrar al hacer clic fuera del modal
+document.getElementById('modal-confirmar').addEventListener('click', (e) => {
+  if (e.target.id === 'modal-confirmar') cerrarConfirmar()
+})
 async function marcarCompletado(id) {
   const { error } = await supabase
     .from('vencimientos')
