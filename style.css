@@ -646,3 +646,49 @@ h2 {
 .btn-eliminar-confirmar:hover {
   background: #dc2626;
 }
+
+/* ============================================
+   ANIMACIONES SUAVES
+   ============================================ */
+
+/* Fade-in de tarjetas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vencimiento {
+  animation: fadeInUp 0.3s ease-out;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vencimiento:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Transición de la lista */
+#lista {
+  transition: opacity 0.3s ease;
+}
+
+/* Transición del toggle */
+.vista-btn {
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+/* Transición de filtros */
+.filtro-btn {
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Transición del buscador */
+.buscador {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
