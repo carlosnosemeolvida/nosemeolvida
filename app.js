@@ -64,31 +64,26 @@ async function registrar(email, password) {
     if (error) throw error
 
     // 2. Si el usuario se creó bien, enviamos el correo con Resend
-    if (data.user) {
+       if (data.user) {
         try {
-            await fetch('https://api.resend.com/emails', {
+            await fetch('/api/send-email', { // Llamamos a nuestro servidor seguro
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    // Leemos la variable del archivo .env
-                    'Authorization': 'Bearer re_7dDmqAys_9y8gahUdq85xFn7ortnPB3WA',
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    from: 'NoSeMeOlvida <recordatorios@nosemeolvida.com.mx>',
-                    to: email,
-                    subject: '¡Bienvenido a NoSeMeOlvida!',
-                    html: '<p>Hola, tu cuenta está lista. Empieza a registrar vencimientos para no olvidar nada.</p>'
-                })
+                body: JSON.stringify({ email: email })
             });
-            console.log("Correo de bienvenida enviado con éxito");
+            console.log("Petición de correo enviada al servidor");
         } catch (emailError) {
             // Si falla el correo, no bloqueamos el registro del usuario
-            console.error("Error enviando el correo:", emailError);
+            console.error("Error llamando a la función del servidor:", emailError);
         }
+    }
+        
     }
 
     return data
-}
+
 
 async function iniciarSesion(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
