@@ -71,7 +71,7 @@ async function registrar(email, password) {
                 headers: {
                     'Content-Type': 'application/json',
                     // Leemos la variable del archivo .env
-                    'Authorization': `Bearer ${import.meta.env.RESEND_API_KEY}`
+                    'Authorization': 'Bearer re_7dDmqAys_9y8gahUdq85xFn7ortnPB3WA',
                 },
                 body: JSON.stringify({
                     from: 'NoSeMeOlvida <recordatorios@nosemeolvida.com.mx>',
