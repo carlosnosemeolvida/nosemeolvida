@@ -55,12 +55,39 @@ const tabs = document.querySelectorAll('.tab')
 // ============================================
 
 async function registrar(email, password) {
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: password
-  })
-  if (error) throw error
-  return data
+    // 1. Creamos el usuario en Supabase
+    const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password
+    })
+    
+    if (error) throw error
+
+    // 2. Si el usuario se creó bien, enviamos el correo con Resend
+    if (data.user) {
+        try {
+            await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Leemos la variable del archivo .env
+                    'Authorization': `Bearer ${import.meta.env.RESEND_API_KEY}`
+                },
+                body: JSON.stringify({
+                    from: 'NoSeMeOlvida <recordatorios@nosemeolvida.com.mx>',
+                    to: email,
+                    subject: '¡Bienvenido a NoSeMeOlvida!',
+                    html: '<p>Hola, tu cuenta está lista. Empieza a registrar vencimientos para no olvidar nada.</p>'
+                })
+            });
+            console.log("Correo de bienvenida enviado con éxito");
+        } catch (emailError) {
+            // Si falla el correo, no bloqueamos el registro del usuario
+            console.error("Error enviando el correo:", emailError);
+        }
+    }
+
+    return data
 }
 
 async function iniciarSesion(email, password) {
