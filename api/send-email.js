@@ -10,6 +10,11 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Falta el email' });
   }
 
+  // Comprobación para ver si Vercel está leyendo la variable
+  if (!process.env.RESEND_API_KEY) {
+    return res.status(500).json({ error: 'La variable RESEND_API_KEY no está configurada en Vercel' });
+  }
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
