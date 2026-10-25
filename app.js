@@ -74,16 +74,14 @@ async function registrar(email, password) {
                 body: JSON.stringify({ email: email })
             });
             console.log("Petición de correo enviada al servidor");
-        } catch (emailError) {
+                } catch (emailError) {
             // Si falla el correo, no bloqueamos el registro del usuario
             console.error("Error llamando a la función del servidor:", emailError);
         }
     }
-        
-    }
 
     return data
-
+}
 
 async function iniciarSesion(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({
