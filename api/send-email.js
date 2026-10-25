@@ -1,20 +1,21 @@
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-
-
 export default async function handler(req, res) {
+  // Solo aceptar POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
   const { email } = req.body;
 
+  if (!email) {
+    return res.status(400).json({ error: 'Falta el email' });
+  }
+
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.RESEND_API_KEY}` 
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`
       },
       body: JSON.stringify({
         from: 'NoSeMeOlvida <recordatorios@nosemeolvida.com.mx>',
