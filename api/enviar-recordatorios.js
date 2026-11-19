@@ -1,27 +1,22 @@
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Necesitamos estas claves para conectarnos a Supabase y a Resend
 const SUPABASE_URL = 'https://mglyeepyjyningcjzasz.supabase.co';
-// ⚠️ IMPORTANTE: Reemplaza esto con tu clave "service_role" de Supabase
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY; 
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
 export default async function handler(req, res) {
-  // 1. Validar que la petición sea de Vercel Cron (seguridad)
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
   try {
-    // 2. Obtener la fecha de mañana en formato YYYY-MM-DD
+    // 1. Obtener la fecha de hoy en formato YYYY-MM-DD
     const hoy = new Date();
-    const manana = new Date(hoy);
-    manana.setDate(manana.getDate() + 1);
-    const fechaManana = manana.toISOString().split('T')[0];
+    const fechaHoy = new Date(hoy.getTime() - (hoy.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
 
-    // 3. Buscar en Supabase los vencimientos que vencen mañana y que no han sido avisados
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/vencimientos?fecha=eq.${fechaManana}&aviso_enviado=eq.false`, {
+    // 2. Buscar TODOS los vencimientos en Supabase que no han sido avisados
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/vencimientos?aviso_enviado=eq.false`, {
       headers: {
         'apikey': SUPABASE_SERVICE_KEY,
         'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`
@@ -31,13 +26,25 @@ export default async function handler(req, res) {
     const vencimientos = await response.json();
 
     if (!vencimientos || vencimientos.length === 0) {
-      return res.status(200).json({ message: 'No hay recordatorios para enviar hoy.' });
+      return res.status(200).json({ message: 'No hay vencimientos pendientes de aviso.' });
     }
 
-    // 4. Enviar un correo por cada vencimiento
+    // 3. Revisar cuáles toca avisar HOY y enviar los correos
     const resultados = [];
+    
     for (const v of vencimientos) {
-      const email = v.email_aviso; // El correo que guardamos al crear el vencimiento
+      const fechaV = new Date(v.fecha + 'T00:00:00');
+      const fechaH = new Date(fechaHoy + 'T00:00:00');
+      
+      // Calcular cuántos días faltan para el vencimiento
+      const diasFaltantes = Math.round((fechaV - fechaH) / (1000 * 60 * 60 * 24));
+      
+      // Si los días que faltan NO coinciden con los días de aviso configurados, lo saltamos
+      if (diasFaltantes !== parseInt(v.dias_aviso)) {
+        continue;
+      }
+
+      const email = v.email_aviso;
       
       if (email) {
         const emailResponse = await fetch('https://api.resend.com/emails', {
@@ -49,10 +56,10 @@ export default async function handler(req, res) {
           body: JSON.stringify({
             from: 'NoSeMeOlvida <recordatorios@nosemeolvida.com.mx>',
             to: email,
-            subject: `⏰ Recordatorio: ${v.nombre} vence mañana`,
+            subject: `⏰ Recordatorio: ${v.nombre} vence en ${v.dias_aviso} días`,
             html: `
               <h2>¡Hola!</h2>
-              <p>Te recordamos que tu vencimiento <strong>${v.nombre}</strong> vence mañana <strong>${v.fecha}</strong>.</p>
+              <p>Te recordamos que tu vencimiento <strong>${v.nombre}</strong> vence en <strong>${v.dias_aviso} días</strong> (el ${v.fecha}).</p>
               <p>Categoría: ${v.categoria || 'General'}</p>
               ${v.notas ? `<p>Notas: ${v.notas}</p>` : ''}
               <br>
@@ -61,7 +68,6 @@ export default async function handler(req, res) {
           })
         });
 
-        // 5. Marcar en Supabase que ya se envió el aviso
         if (emailResponse.ok) {
             await fetch(`${SUPABASE_URL}/rest/v1/vencimientos?id=eq.${v.id}`, {
                 method: 'PATCH',
