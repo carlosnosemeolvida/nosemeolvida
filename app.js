@@ -3,9 +3,6 @@ if (window.location.hash.includes('access_token=') && window.location.hash.inclu
   window.location.href = '/reset-password.html' + window.location.hash
 }
 
-
-
-
 // ============================================
 // NoSeMeOlvida - App con Supabase
 // ============================================
@@ -15,9 +12,6 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // ⚠️ IMPORTANTE: Reemplaza la key con la tuya del archivo .env
 const SUPABASE_URL = 'https://mglyeepyjyningcjzasz.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nbHllZXB5anluaW5nY2p6YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzMDk0MzUsImV4cCI6MjEwNjg4NTQzNX0.glYqLHkGFfxk9iLBufGTDB3gJ2t-utNQkqnb86K_yTg'
-
-
-
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
@@ -130,7 +124,8 @@ async function agregarVencimiento(nombre, fecha, diasAviso, categoria, notas) {
          email_aviso: usuarioActual.email,
          dias_aviso: diasAviso,
                categoria: categoria,
-                     notas: notas || null
+                     notas: notas || null,
+                     aviso_enviado: false
     }])
     .select()
   
@@ -502,7 +497,6 @@ async function init() {
     mostrarLogin()
   }
 }
-
 
 // ============================================
 // MODAL EDITAR — Event listeners
